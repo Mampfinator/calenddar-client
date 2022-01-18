@@ -25,6 +25,7 @@
     "ws": "^8.4.2"
   },
   "devDependencies": {
+    "@types/eventemitter2": "^4.1.0",
     "@types/ws": "^8.2.2"
   }
 }
