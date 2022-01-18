@@ -1,6 +1,8 @@
 import { WebSocket } from "ws";
-import { Client } from ".";
+import { Client, ClientOptions } from "./Client";
 import { CalenddarPlatform } from "./Client";
+import { Notification } from "./structures";
+import { APINotification } from "./structures/Notification";
 
 /**
  * WebSocket for CalenDDar. Parses messages and relays them to the proper Client events.
@@ -12,9 +14,10 @@ export class CalenddarWebsocket extends WebSocket {
      */
     private readonly _connected: Promise<void>;
     constructor(
-        public readonly client: Client
+        public readonly client: Client,
+        options?: ClientOptions
     ) {
-        super("wss://api.calenddar.de");
+        super(options?.customUrl ?? "wss://api.calenddar.de");
         this.on("message", (data) => {
             try {
                 var message = JSON.parse(data.toString());
@@ -23,9 +26,7 @@ export class CalenddarWebsocket extends WebSocket {
                 return;
             }
 
-            const {event, vtubers, platform, data: messageData} = message;
-
-            this.handleMessage(event, vtubers, platform, data); 
+            if (message) this.handleMessage(message); 
         });
 
         this.on("close", (code, reason) => {
@@ -56,22 +57,12 @@ export class CalenddarWebsocket extends WebSocket {
         });
     }
 
-    private async handleMessage(event: string, vtuberIds: string[], platform: CalenddarPlatform, data: Record<string, any>) {
-        let vtubers;
-        if (vtuberIds && vtuberIds.length > 0) {
-            vtubers = await Promise.all(vtuberIds.map(id => this.client.vtubers.fetch(id)));
-        } else vtubers = vtuberIds; 
-        
-        if (platform) {
-            this.client.emit(`${event}.${platform}`, this.buildType(event, platform, data) ?? data, vtubers, platform);
-        } else {
-            this.client.emit(event, this.buildType(event, platform, data) ?? data, vtubers);
+    private async handleMessage(apiNotification: APINotification<any>) {
+        if (apiNotification.platform) {
+            const notification = new Notification(this.client, apiNotification);
+            await notification.fetchVtubers();
+            this.client.emit(`${notification.event}.${notification.platform}`, notification);
         }
-    }
-
-
-    private buildType(event: string, platform: CalenddarPlatform, data: Record<string, any>): any {
-        
     }
 
     async start() {

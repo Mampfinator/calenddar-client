@@ -21,6 +21,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "eventemitter2": "^6.4.5",
+    "graphql-request": "^3.7.0",
     "ws": "^8.4.2"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import { Client } from "..";
 import { RequestBuilder } from "../RequestBuilder";
-import {APICommunityPost} from "../types";
+import { CommunityPost, APICommunityPost} from "../structures/CommunityPost"
 
 class CommunityPosts {
     public readonly client: Client
@@ -11,18 +11,18 @@ class CommunityPosts {
         this.client = client;
     }
 
-    fetch(id: string) {
-        return new RequestBuilder<APICommunityPost>(this.client)
+    fetch(id: string): Promise<CommunityPost> {
+        return new RequestBuilder(this.client)
             .setUrl(`https://api.calenddar.de/youtube/post/${id}`)
             .setMethod("GET")
-            .send()
+            .send(CommunityPost)
     }
 
-    fetchByChannel(channelId: string) {
-        return new RequestBuilder<APICommunityPost[]>(this.client)
+    fetchByChannel(channelId: string): Promise<CommunityPost[]> {
+        return new RequestBuilder(this.client)
             .setUrl(`https://api.calenddar.de/youtube/posts/${channelId}`)
             .setMethod("GET")
-            .send()
+            .send(CommunityPost);
     }
 }
 

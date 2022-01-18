@@ -1,6 +1,6 @@
 import axios, {AxiosResponse} from "axios";
 import { Client } from ".";
-import {Constructable, toClass} from "./util/ensureClass";
+import {Constructable, toClass} from "./util";
 
 type RequestMethod = "GET" | "POST" | "DELETE" | "PATCH";
 
@@ -36,6 +36,7 @@ export class RequestBuilder<T = any> {
     send(transformer?: Constructable<T>): Promise<T>
     send(transformer?: Constructable<T>, resolveFull?: true): Promise<AxiosResponse>
     async send(transformer?: Constructable<T>, resolveFull?: boolean): Promise<T | T[] | AxiosResponse> {
+
         if (!this.method) throw new TypeError("Set the request method with RequestBuilder#setMethod before sending the request.");
         if (!this.url) throw new TypeError("Set the url with RequestBuilder#setUrl before sending the request.");
 

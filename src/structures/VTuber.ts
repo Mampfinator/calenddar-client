@@ -1,57 +1,79 @@
 import { Client } from "..";
 import { APIVTuber } from "../types";
 
-class VTuberYouTubeManager {
-    public readonly client: Client;
+class YouTubeChannel {
+    public readonly client!: Client;
     constructor(
         client: Client,
+        public readonly id: string, 
         public readonly vtuber: VTuber
     ) {
-        this.client = client;
+        Object.defineProperty(this, "client",  {value: client, enumerable: false});
     }
 
-    fetchPosts() {
-        return this.client.youtube.posts.fetchByChannel(this.vtuber.youtubeId!);
+    async fetchPosts() {
+        return this.client.youtube.posts.fetchByChannel(this.id);
+    }
+}
+
+class TwitchChannel {
+    public readonly client!: Client;
+    constructor(
+        client: Client,
+        public readonly id: string,
+        public readonly vtuber: VTuber
+    ) {
+        Object.defineProperty(this, "client", {value: client, enumerable: false});
     }
 }
 
 export class VTuber {
-    public readonly client: Client;
+    public readonly client!: Client;
 
     public partial!: boolean;
     public id!: string;
     public name!: string;
     public originalName?: string;
-    public youtubeId?: string;
-    public youtube?: VTuberYouTubeManager;
-    public twitchId?: string;
-    public twitterId?: string;
-    public twitcastingId?: string;
+    public youtube?: YouTubeChannel;
+    public twitch?: TwitchChannel;
     public affiliation!: string;
 
     constructor(
         client: Client,
         public raw: APIVTuber | string
     ) {
-        this.client = client;
+        Object.defineProperties(this, {
+            client: {
+                value: client,
+                enumerable: false,
+                writable: false
+            },
+            raw: {
+                enumerable: false,
+                writable: true
+            },
+            partial: {
+                enumerable: false,
+                writable: true
+            }
+        });
+
         if (typeof raw === "object") this.update(raw);
         else {
             this.id = raw;
             this.partial = true;
         }
-
-        if (this.youtubeId) this.youtube = new VTuberYouTubeManager(client, this);
     }
 
     private update(apiVtuber: APIVTuber) {
-        this.twitchId = apiVtuber.twitchId;
-        this.twitterId = apiVtuber.twitterId;
-        this.twitcastingId = apiVtuber.twitcastingId;
+        if (apiVtuber.youtubeId) this.youtube = new YouTubeChannel(this.client, apiVtuber.youtubeId, this);
+        if (apiVtuber.twitchId) this.twitch = new TwitchChannel(this.client, apiVtuber.twitchId, this);
+        //this.twitterId = apiVtuber.twitterId;
+        //this.twitcastingId = apiVtuber.twitcastingId;
         this.id = apiVtuber.id;
         this.name = apiVtuber.name;
         this.originalName = apiVtuber.originalName;
         this.affiliation = apiVtuber.affiliation;
-        this.youtubeId = apiVtuber.youtubeId;
 
         this.raw = apiVtuber;
         this.partial = false;
