@@ -2,7 +2,7 @@ import { CalenddarWebsocket } from "./CalenddarWebsocket";
 import { EventEmitter2 } from "eventemitter2";
 import { VTubers } from "./REST/VTubers";
 import { YouTube } from "./REST/YouTube";
-import { VTuber } from "./types";
+import { VTuber } from "./structures/VTuber";
 
 export type CalenddarEvent = "live" | "offline" | "post";
 type MiscEvent = "disconnect" | "ready" | "debug";

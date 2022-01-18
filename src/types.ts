@@ -1,4 +1,4 @@
-export interface VTuber {
+export interface APIVTuber {
     id: string;
     name: string;
     affiliation: string;
@@ -22,7 +22,11 @@ export interface VTuber {
     twitcastingId?: string;
 }
 
-export interface CommunityPost {
+export interface APIStream {
+    
+}
+
+export interface APICommunityPost {
     id: string;
     channelId: string;
     text?: string;

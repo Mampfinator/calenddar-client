@@ -57,7 +57,6 @@ export class CalenddarWebsocket extends WebSocket {
     }
 
     private async handleMessage(event: string, vtuberIds: string[], platform: CalenddarPlatform, data: Record<string, any>) {
-        console.log(vtuberIds);
         let vtubers;
         if (vtuberIds && vtuberIds.length > 0) {
             vtubers = await Promise.all(vtuberIds.map(id => this.client.vtubers.fetch(id)));

@@ -1,8 +1,12 @@
 import axios, {AxiosResponse} from "axios";
+import { Client } from ".";
+import {Constructable, toClass} from "./util/ensureClass";
 
 type RequestMethod = "GET" | "POST" | "DELETE" | "PATCH";
 
 export class RequestBuilder<T = any> {
+    constructor(private readonly client: Client) {}
+
     private url?: string;
     private headers: Record<string, string> = {};
     private params: Record<string, string> = {};
@@ -28,10 +32,10 @@ export class RequestBuilder<T = any> {
         return this;
     }
 
-    send(resolveFull: false): Promise<T>
-    send(): Promise<T>
-    send(resolveFull: true): Promise<AxiosResponse>
-    async send(resolveFull?: boolean): Promise<T | AxiosResponse> {
+    send(transformer?: Constructable<T>, resolveFull?: false): Promise<T>
+    send(transformer?: Constructable<T>): Promise<T>
+    send(transformer?: Constructable<T>, resolveFull?: true): Promise<AxiosResponse>
+    async send(transformer?: Constructable<T>, resolveFull?: boolean): Promise<T | T[] | AxiosResponse> {
         if (!this.method) throw new TypeError("Set the request method with RequestBuilder#setMethod before sending the request.");
         if (!this.url) throw new TypeError("Set the url with RequestBuilder#setUrl before sending the request.");
 
@@ -41,9 +45,15 @@ export class RequestBuilder<T = any> {
             params: this.params,
             headers: this.headers
         });
+        
+        let data: T | T[] | undefined = undefined;
+        if (transformer) {
+            data = await toClass(this.client, response.data as Record<string, any>, transformer);
+            response.data = data;
+        }
 
 
-        if (resolveFull) return response;
-        return response.data as T;
+        if (resolveFull || !data) return response;
+        return data;
     }
 }

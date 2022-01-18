@@ -1,21 +1,25 @@
 import { Client } from "..";
-import { RequestBuilder } from "../CalenddarRestRequestBuilder";
-import {CommunityPost} from "../types";
+import { RequestBuilder } from "../RequestBuilder";
+import {APICommunityPost} from "../types";
 
 class CommunityPosts {
+    public readonly client: Client
+
     constructor(
-        public readonly client: Client
-    ) {}
+        client: Client
+    ) {
+        this.client = client;
+    }
 
     fetch(id: string) {
-        return new RequestBuilder<CommunityPost>()
+        return new RequestBuilder<APICommunityPost>(this.client)
             .setUrl(`https://api.calenddar.de/youtube/post/${id}`)
             .setMethod("GET")
             .send()
     }
 
     fetchByChannel(channelId: string) {
-        return new RequestBuilder<CommunityPost[]>()
+        return new RequestBuilder<APICommunityPost[]>(this.client)
             .setUrl(`https://api.calenddar.de/youtube/posts/${channelId}`)
             .setMethod("GET")
             .send()
