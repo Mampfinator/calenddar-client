@@ -1,14 +1,15 @@
 {
   "name": "calenddar-client",
-  "version": "1.0.2",
+  "version": "1.0.0",
   "description": "Client library for CalenDDar.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": ""
   },
   "files": [
     "dist"
   ],
+  "types": "dist/types.d.ts",
   "keywords": [],
   "author": "Sir Eatsalot",
   "repository": {
