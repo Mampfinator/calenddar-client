@@ -3,13 +3,12 @@
   "version": "1.0.3",
   "description": "Client library for CalenDDar.",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": ""
+    "test": "",
+    "publish": "tsc && np"
   },
-  "files": [
-    "dist"
-  ],
-  "types": "dist/types.d.ts",
+  "files": ["dist"],
   "keywords": [],
   "author": "Sir Eatsalot",
   "repository": {
