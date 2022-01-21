@@ -3,6 +3,7 @@ import { EventEmitter2 } from "eventemitter2";
 import { GraphQLClient } from "graphql-request";
 import { VTubers } from "./REST/VTubers";
 import { YouTube } from "./REST/YouTube";
+import { Streams } from "./REST/Streams";
 
 export type CalenddarEvent = "live" | "offline" | "upcoming" | "post";
 type MiscEvent = "disconnect" | "ready" | "debug";
@@ -16,6 +17,7 @@ export class Client extends EventEmitter2 {
     public readonly ws: CalenddarWebsocket;
     public readonly gql: GraphQLClient
     public readonly vtubers: VTubers;
+    public readonly streams: Streams;
     public readonly youtube: YouTube;
 
     constructor(options?: ClientOptions) {
@@ -26,6 +28,7 @@ export class Client extends EventEmitter2 {
         this.ws = new CalenddarWebsocket(this, options);
         this.vtubers = new VTubers(this);
         this.youtube = new YouTube(this);
+        this.streams = new Streams(this);
         this.gql = new GraphQLClient(`https://api.calenddar.de/graphql`);
     }
     
